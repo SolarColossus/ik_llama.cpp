@@ -78,8 +78,11 @@ void ggml_cuda_error(const char * stmt, const char * func, const char * file, in
             ggml_cuda_error(#err, __func__, __FILE__, __LINE__, error_fn(err_));    \
         }                                                                           \
     } while (0)
-
+#ifdef GGML_USE_HIPBLAS
+#define CUDA_CHECK(err) CU_CHECK(err)
+#else
 #define CUDA_CHECK(err) CUDA_CHECK_GEN(err, cudaSuccess, cudaGetErrorString)
+#endif
 
 #if CUDART_VERSION >= 12000 || defined(GGML_USE_MUSA)
     static const char * cublas_get_error_str(const cublasStatus_t err) {
