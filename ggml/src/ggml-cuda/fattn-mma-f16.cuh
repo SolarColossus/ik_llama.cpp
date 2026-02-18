@@ -1168,7 +1168,12 @@ static __global__ void flash_attn_mma_combine_results(
 template<int width = WARP_SIZE>
 static __device__ __forceinline__ int warp_reduce_all(int x) {
     if constexpr (width == WARP_SIZE) { //ggml_cuda_get_physical_warp_size()) {
+#ifdef GGML_USE_HIPBLAS
+        return __all_sync(0xffffffffffffffff, x);
+#else
         return __all_sync(0xffffffff, x);
+#endif
+
     } else {
 #pragma unroll
         for (int offset = width/2; offset > 0; offset >>= 1) {
