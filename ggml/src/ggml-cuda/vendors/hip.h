@@ -9,8 +9,8 @@
 #include "rocblas/rocblas.h"
 #endif // __HIP_PLATFORM_AMD__
 #ifdef GGML_USE_HIPBLAS
-typedef hip_bfloat16 nv_bfloat16;
-typedef hip_bfloat162 nv_bfloat162;
+typedef __hip_bfloat16 nv_bfloat16;
+typedef __hip_bfloat162 nv_bfloat162;
 #endif
 #define CUBLAS_COMPUTE_16F HIPBLAS_COMPUTE_16F
 #define CUBLAS_COMPUTE_32F HIPBLAS_COMPUTE_32F
