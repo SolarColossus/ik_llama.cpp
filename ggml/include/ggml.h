@@ -226,6 +226,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define GGML_CUDA_FUSION 1
+#define GGML_CUDA_MIN_BATCH_OFFLOAD 32
+
 #define GGML_FILE_MAGIC   0x67676d6c // "ggml"
 #define GGML_FILE_VERSION 1
 
