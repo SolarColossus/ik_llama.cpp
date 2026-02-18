@@ -95,11 +95,7 @@ static __global__ void mmq_ids_helper(
             }
 
             // The thread with the highest index in the warp always has the sum over the whole warp, use it to increment all threads:
-#ifdef GGML_USE_HIPBLAS
-            it_compact += __shfl_sync(0xFFFFFFFFFFFFFFFF, it_compact_add_lower + it_compact_add_self, warp_size - 1, warp_size);
-#else
             it_compact += __shfl_sync(0xFFFFFFFF, it_compact_add_lower + it_compact_add_self, warp_size - 1, warp_size);
-#endif
         }
     }
     nex_prev = warp_reduce_sum<warp_size>(nex_prev);
