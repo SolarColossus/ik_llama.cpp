@@ -546,18 +546,9 @@ if (GGML_HIPBLAS)
         list(APPEND GGML_SOURCES_ROCM ${SRCS})
     endif()
 
-    ggml_add_backend_library(ggml-hip
-                         ${GGML_HEADERS_ROCM}
-                         ${GGML_SOURCES_ROCM}
-                        )
-
-    # TODO: do not use CUDA definitions for HIP
-    if (NOT GGML_BACKEND_DL)
-        target_compile_definitions(ggml PUBLIC GGML_USE_CUDA)
-    endif()
+    list(APPEND GGML_CDEF_PUBLIC GGML_USE_CUDA)
 
     add_compile_definitions(GGML_USE_HIPBLAS)
-    add_compile_definitions(GGML_USE_HIP)
     add_compile_definitions(GGML_CUDA_DMMV_X=${GGML_CUDA_DMMV_X})
     add_compile_definitions(GGML_CUDA_MMV_Y=${GGML_CUDA_MMV_Y})
     add_compile_definitions(K_QUANTS_PER_ITERATION=${GGML_CUDA_KQUANTS_ITER})
@@ -1181,7 +1172,7 @@ if (GGML_CUDA)
 
         list(APPEND CUDA_FLAGS -compress-mode=${GGML_CUDA_COMPRESSION_MODE})
     endif()
-
+	
     if (GGML_FATAL_WARNINGS)
         list(APPEND CUDA_FLAGS -Werror all-warnings)
     endif()
