@@ -530,6 +530,8 @@ if (GGML_HIPBLAS)
     list(APPEND GGML_SOURCES_ROCM "ggml-cuda.cu")
     file(GLOB   SRCS "ggml-cuda/template-instances/fattn-wmma*.cu")
     list(APPEND GGML_SOURCES_ROCM ${SRCS})
+    file(GLOB   SRCS "ggml-cuda/template-instances/fattn-mma*.cu")
+    list(APPEND GGML_SOURCES_ROCM ${SRCS})
     file(GLOB   SRCS "ggml-cuda/template-instances/mmq*.cu")
     list(APPEND GGML_SOURCES_ROCM ${SRCS})
 
@@ -1172,7 +1174,7 @@ if (GGML_CUDA)
 
         list(APPEND CUDA_FLAGS -compress-mode=${GGML_CUDA_COMPRESSION_MODE})
     endif()
-	
+
     if (GGML_FATAL_WARNINGS)
         list(APPEND CUDA_FLAGS -Werror all-warnings)
     endif()
