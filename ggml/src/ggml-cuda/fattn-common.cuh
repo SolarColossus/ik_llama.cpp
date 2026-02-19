@@ -424,8 +424,8 @@ static __device__ __forceinline__ void quantize_q8_1_to_shared(
     }
 #pragma unroll
     for (int mask = QI8_1/2; mask > 0; mask >>= 1) {
-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, 32));
-        sum +=             __shfl_xor_sync(0xFFFFFFFF, sum,  mask, 32);
+        amax = fmaxf(amax, __shfl_xor_sync(WARP_MASK, amax, mask, 32));
+        sum +=             __shfl_xor_sync(WARP_MASK, sum,  mask, 32);
     }
 
     const float d = amax / 127;
@@ -697,7 +697,7 @@ static __global__ void flash_attn_combine_results(
     for (int l = 0; l < parallel_blocks; ++l) {
         const float diff = meta[l].x - kqmax;
         const float KQ_max_scale = expf(diff);
-        const uint32_t ftz_mask = 0xFFFFFFFF * (diff > SOFTMAX_FTZ_THRESHOLD);
+        const uint32_t ftz_mask = 0xffffffff * (diff > SOFTMAX_FTZ_THRESHOLD);
         *((uint32_t *) &KQ_max_scale) &= ftz_mask;
 
         VKQ_numerator   += KQ_max_scale * VKQ_parts[l*gridDim.y*Dv + blockIdx.y*Dv + tid];
@@ -866,4 +866,3 @@ void launch_fattn(
         (dst_tmp.ptr, dst_tmp_meta.ptr, (float *) KQV->data);
     CUDA_CHECK(cudaGetLastError());
 }
-

@@ -17,3 +17,4 @@
 #define CUBLAS_COMPUTE_32F CUDA_R_32F
 #define cublasComputeType_t cudaDataType_t
 #endif // CUDART_VERSION < 11020
+#define WARP_MASK 0xFFFFFFFF

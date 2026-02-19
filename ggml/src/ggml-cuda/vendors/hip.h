@@ -105,6 +105,8 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define __all_sync(mask, var) __all(var)
 #define __any_sync(mask, var) __any(var)
 
+#define WARP_MASK 0xFFFFFFFFFFFFFFFF
+
 #define __CUDA_ARCH__ 1300
 
 #if defined(__gfx1100__) || defined(__gfx1101__) || defined(__gfx1102__) || defined(__gfx1103__) || \

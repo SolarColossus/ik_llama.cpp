@@ -115,7 +115,7 @@ static __global__ void quantize_mmq_q8_1(
     // Exchange max. abs. value between vals_per_scale/4 threads.
 #pragma unroll
     for (int mask = vals_per_scale/8; mask > 0; mask >>= 1) {
-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, WARP_SIZE));
+        amax = fmaxf(amax, __shfl_xor_sync(WARP_MASK, amax, mask, WARP_SIZE));
     }
 
     float sum;
@@ -125,7 +125,7 @@ static __global__ void quantize_mmq_q8_1(
         // Exchange calculate sum across vals_per_sum/4 threads.
 #pragma unroll
         for (int mask = vals_per_sum/8; mask > 0; mask >>= 1) {
-            sum += __shfl_xor_sync(0xFFFFFFFF, sum, mask, WARP_SIZE);
+            sum += __shfl_xor_sync(WARP_MASK, sum, mask, WARP_SIZE);
         }
     }
 
@@ -207,7 +207,7 @@ static __global__ void quantize_mmq_q8_1_id(
     // Exchange max. abs. value between vals_per_scale/4 threads.
 #pragma unroll
     for (int mask = vals_per_scale/8; mask > 0; mask >>= 1) {
-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, WARP_SIZE));
+        amax = fmaxf(amax, __shfl_xor_sync(WARP_MASK, amax, mask, WARP_SIZE));
     }
 
     float sum;
@@ -217,7 +217,7 @@ static __global__ void quantize_mmq_q8_1_id(
         // Exchange calculate sum across vals_per_sum/4 threads.
 #pragma unroll
         for (int mask = vals_per_sum/8; mask > 0; mask >>= 1) {
-            sum += __shfl_xor_sync(0xFFFFFFFF, sum, mask, WARP_SIZE);
+            sum += __shfl_xor_sync(WARP_MASK, sum, mask, WARP_SIZE);
         }
     }
 

@@ -259,7 +259,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_iter(
         for (int col = 0; col < cols_per_thread; ++col) {
 #pragma unroll
             for (int offset = 16; offset >= 4; offset >>= 1) {
-                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(0xFFFFFFFF, KQ_max_new[col], offset, WARP_SIZE));
+                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(WARP_MASK, KQ_max_new[col], offset, WARP_SIZE));
             }
         }
 
@@ -315,7 +315,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_iter(
         for (int col = 0; col < cols_per_thread; ++col) {
 #pragma unroll
             for (int offset = 2; offset >= 1; offset >>= 1) {
-                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(0xFFFFFFFF, KQ_max_new[col], offset, WARP_SIZE));
+                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(WARP_MASK, KQ_max_new[col], offset, WARP_SIZE));
             }
         }
 
@@ -606,7 +606,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
         for (int col = 0; col < cols_per_thread; ++col) {
 #pragma unroll
             for (int offset = offset_first; offset >= offset_last; offset >>= 1) {
-                KQ_rowsum[col] += __shfl_xor_sync(0xFFFFFFFF, KQ_rowsum[col], offset, WARP_SIZE);
+                KQ_rowsum[col] += __shfl_xor_sync(WARP_MASK, KQ_rowsum[col], offset, WARP_SIZE);
             }
         }
     }
@@ -766,7 +766,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
             if (offset >= WARP_SIZE) {
                 continue;
             }
-            KQ_cmn = fmaxf(KQ_cmn, __shfl_xor_sync(0xFFFFFFFF, KQ_cmn, offset, WARP_SIZE));
+            KQ_cmn = fmaxf(KQ_cmn, __shfl_xor_sync(WARP_MASK, KQ_cmn, offset, WARP_SIZE));
         }
 
         float KQ_cms[nmeta]; // KQ combine max scale per warp.
@@ -785,7 +785,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
             if (offset >= WARP_SIZE) {
                 continue;
             }
-            KQ_crs += __shfl_xor_sync(0xFFFFFFFF, KQ_crs, offset, WARP_SIZE);
+            KQ_crs += __shfl_xor_sync(WARP_MASK, KQ_crs, offset, WARP_SIZE);
         }
 
         // Write back combined meta data:
@@ -1155,7 +1155,7 @@ static __global__ void flash_attn_mma_combine_results(
     for (int l = 0; l < parallel_blocks; ++l) {
         const float diff = meta[l].x - kqmax;
         float KQ_max_scale = expf(diff);
-        const uint32_t ftz_mask = 0xFFFFFFFF * (diff > SOFTMAX_FTZ_THRESHOLD);
+        const uint32_t ftz_mask = 0xffffffff * (diff > SOFTMAX_FTZ_THRESHOLD);
         *((uint32_t *) &KQ_max_scale) &= ftz_mask;
 
         VKQ_numerator   += KQ_max_scale * VKQ_parts[l*gridDim.z*D + blockIdx.z*D + tid];
@@ -1168,11 +1168,11 @@ static __global__ void flash_attn_mma_combine_results(
 template<int width = WARP_SIZE>
 static __device__ __forceinline__ int warp_reduce_all(int x) {
     if constexpr (width == WARP_SIZE) { //ggml_cuda_get_physical_warp_size()) {
-        return __all_sync(0xffffffff, x);
+        return __all_sync(WARP_MASK, x);
     } else {
 #pragma unroll
         for (int offset = width/2; offset > 0; offset >>= 1) {
-            x = __shfl_xor_sync(0xffffffff, x, offset, width) && x;
+            x = __shfl_xor_sync(WARP_MASK, x, offset, width) && x;
         }
         return x;
     }

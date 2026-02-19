@@ -407,8 +407,8 @@ static __device__ __forceinline__ void quantize_q8_1_to_shared(
     }
 #pragma unroll
     for (int mask = QI8_1/2; mask > 0; mask >>= 1) {
-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, 32));
-        sum +=             __shfl_xor_sync(0xFFFFFFFF, sum,  mask, 32);
+        amax = fmaxf(amax, __shfl_xor_sync(WARP_MASK, amax, mask, 32));
+        sum +=             __shfl_xor_sync(WARP_MASK, sum,  mask, 32);
     }
 
     const float d = amax / 127;
@@ -695,7 +695,7 @@ static __global__ void flash_attn_combine_results(
     for (int l = 0; l < parallel_blocks; ++l) {
         const float diff = meta[l].x - kqmax;
         float KQ_max_scale = expf(diff);
-        const uint32_t ftz_mask = 0xFFFFFFFF * (diff > SOFTMAX_FTZ_THRESHOLD);
+        const uint32_t ftz_mask = 0xffffffff * (diff > SOFTMAX_FTZ_THRESHOLD); // maybe change WARP_MASK back to 0xffffffff
         *((uint32_t *) &KQ_max_scale) &= ftz_mask;
 
         VKQ_numerator   += KQ_max_scale * VKQ_parts[l*D + tid];
@@ -708,11 +708,11 @@ static __global__ void flash_attn_combine_results(
 template<int width = WARP_SIZE>
 static __device__ __forceinline__ int warp_reduce_all(int x) {
     if constexpr (width == WARP_SIZE) { //ggml_cuda_get_physical_warp_size()) {
-        return __all_sync(0xffffffff, x);
+        return __all_sync(WARP_MASK, x);
     } else {
 #pragma unroll
         for (int offset = width/2; offset > 0; offset >>= 1) {
-            x = __shfl_xor_sync(0xffffffff, x, offset, width) && x;
+            x = __shfl_xor_sync(WARP_MASK, x, offset, width) && x;
         }
         return x;
     }

@@ -84,8 +84,8 @@ __launch_bounds__(4 * WARP_SIZE, 1) __global__ void topk_moe_cuda(const float * 
 
 #pragma unroll
         for (int mask = WARP_SIZE / 2; mask > 0; mask /= 2) {
-            const float val    = __shfl_xor_sync(0xFFFFFFFF, max_val, mask, WARP_SIZE);
-            const int   expert = __shfl_xor_sync(0xFFFFFFFF, max_expert, mask, WARP_SIZE);
+            const float val    = __shfl_xor_sync(WARP_MASK, max_val, mask, WARP_SIZE);
+            const int   expert = __shfl_xor_sync(WARP_MASK, max_expert, mask, WARP_SIZE);
             if (val > max_val) {
                 max_val    = val;
                 max_expert = expert;
