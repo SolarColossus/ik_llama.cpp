@@ -36,7 +36,7 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define cublasGetMathMode hipblasGetMathMode
 #define cublasHandle_t hipblasHandle_t
 #define cublasMath_t hipblasMath_t
-#define cublasSetMathMode CUBLAS_STATUS_SUCCESS
+#define cublasSetMathMode(handle, mode) CUBLAS_STATUS_SUCCESS
 #define cublasSetStream hipblasSetStream
 #define cublasStrsmBatched hipblasStrsmBatched
 #define cublasSgemm hipblasSgemm
