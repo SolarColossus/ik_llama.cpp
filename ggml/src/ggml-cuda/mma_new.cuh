@@ -178,7 +178,10 @@ namespace ggml_cuda_mma {
             : "=r"(xi[0]), "=r"(xi[1])
             : "l"(xs));
 #else
-        load_generic(t, xs0, stride);
+        GGML_UNUSED(t);
+        GGML_UNUSED(xs0);
+        GGML_UNUSED(stride);
+        NO_DEVICE_CODE;
 #endif // INT8_MMA_AVAILABLE
     }
 
