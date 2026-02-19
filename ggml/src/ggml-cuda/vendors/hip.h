@@ -15,10 +15,14 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define CUBLAS_COMPUTE_16F HIPBLAS_COMPUTE_16F
 #define CUBLAS_COMPUTE_32F HIPBLAS_COMPUTE_32F
 #define CUBLAS_COMPUTE_32F_FAST_16F HIPBLAS_COMPUTE_32F_FAST_16F
+#define CUBLAS_DEFAULT_MATH HIPBLAS_DEFAULT_MATH
+#define CUBLAS_DIAG_NON_UNIT HIPBLAS_DIAG_NON_UNIT
+#define CUBLAS_FILL_MODE_UPPER HIPBLAS_FILL_MODE_UPPER
 #define CUBLAS_GEMM_DEFAULT HIPBLAS_GEMM_DEFAULT
 #define CUBLAS_GEMM_DEFAULT_TENSOR_OP HIPBLAS_GEMM_DEFAULT
 #define CUBLAS_OP_N HIPBLAS_OP_N
 #define CUBLAS_OP_T HIPBLAS_OP_T
+#define CUBLAS_SIDE_RIGHT HIPBLAS_SIDE_RIGHT
 #define CUBLAS_STATUS_SUCCESS HIPBLAS_STATUS_SUCCESS
 #define CUBLAS_TF32_TENSOR_OP_MATH HIPBLAS_TF32_TENSOR_OP_MATH
 #define CUDA_R_16F  HIPBLAS_R_16F
@@ -30,8 +34,9 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define cublasGemmEx hipblasGemmEx
 #define cublasGemmBatchedEx hipblasGemmBatchedEx
 #define cublasGemmStridedBatchedEx hipblasGemmStridedBatchedEx
-#define cublasHandle_t hipblasHandle_t
 #define cublasGetMathMode hipblasGetMathMode
+#define cublasHandle_t hipblasHandle_t
+#define cublasMath_t hipblasMath_t
 #define cublasSetMathMode hipblasSetMathMode
 #define cublasSetStream hipblasSetStream
 #define cublasStrsmBatched hipblasStrsmBatched
@@ -54,6 +59,8 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define cudaEventDestroy hipEventDestroy
 #define cudaFree hipFree
 #define cudaFreeHost hipHostFree
+#define cudaFuncSetAttribute hipFuncSetAttribute
+#define cudaFuncAttributeMaxDynamicSharedMemorySize hipFuncAttributeMaxDynamicSharedMemorySize
 #define cudaGetDevice hipGetDevice
 #define cudaGetDeviceCount hipGetDeviceCount
 #define cudaGetDeviceProperties hipGetDeviceProperties
