@@ -396,49 +396,6 @@ static __device__ __forceinline__ int ggml_cuda_dp4a(const int a, const int b, i
 #endif // defined(GGML_USE_HIPBLAS) && defined(__HIP_PLATFORM_AMD__)
 }
 
-static constexpr __device__ int ggml_cuda_get_max_cpy_bytes() {
-#ifdef GGML_USE_HIP
-    return 16;
-#else
-#if __CUDA_ARCH__ >= GGML_CUDA_CC_VOLTA
-    return 16;
-#else
-    return 8;
-#endif // __CUDA_ARCH__ >= GGML_CUDA_CC_VOLTA
-#endif // GGML_USE_HIP
-}
-
-template <int nbytes, int alignment = 0>
-static __device__ __forceinline__ void ggml_cuda_memcpy_1(void * __restrict__ dst, const void * __restrict__ src) {
-    static_assert(
-        nbytes <= ggml_cuda_get_max_cpy_bytes() || alignment == 0,
-        "You are misusing the alignment parameter for ggml_cuda_memcpy_1. "
-        "The intent is for the parameter is only as a workaround if either one of the pointers is not properly aligned. "
-        "If you use it to do more bytes per copy than ggml_cuda_max_cpy_bytes() the reads and writes may not be coalesced. "
-        "Call ggml_cuda_memcpy_1 in a loop instead.");
-    if constexpr (alignment != 0) {
-        static_assert(nbytes % alignment == 0, "bad alignment");
-    }
-    constexpr int nb_per_cpy = alignment == 0 ? nbytes : alignment;
-
-#pragma unroll
-    for (int i = 0; i < nbytes/nb_per_cpy; ++i) {
-        if constexpr (nb_per_cpy == 1) {
-            ((char *) dst)[i] = ((const char *) src)[i];
-        } else if constexpr (nb_per_cpy == 2) {
-            ((short *) dst)[i] = ((const short *) src)[i];
-        } else if constexpr (nb_per_cpy == 4) {
-            ((int *) dst)[i] = ((const int *) src)[i];
-        } else if constexpr (nb_per_cpy == 8) {
-            ((int2 *) dst)[i] = ((const int2 *) src)[i];
-        } else if constexpr (nb_per_cpy == 16) {
-            ((int4 *) dst)[i] = ((const int4 *) src)[i];
-        } else {
-            static_assert(nbytes == 0 && nbytes == -1, "bad nbytes");
-        }
-    }
-}
-
 // TODO: move to ggml-common.h
 static constexpr __device__ int8_t kvalues_iq4nl[16] = {-127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113};
 
