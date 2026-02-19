@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.cuh"
-#include "mma_new.cuh"
+#include "mma.cuh"
 #include "vecdotq.cuh"
 #include "iqk_cuda_common.h"
 
