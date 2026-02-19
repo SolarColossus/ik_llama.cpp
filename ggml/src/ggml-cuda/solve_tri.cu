@@ -776,8 +776,13 @@ static void solve_tri_f32_cuda(const float * A,
         // Configure extended shared memory for this kernel
         static bool smem_configured_tiled = false;
         if (!smem_configured_tiled) {
-            cudaFuncSetAttribute(&solve_tri_f32_256x256_tiled,
+#ifdef GGML_USE_HIPBLAS
+            void (*const solve_256x256_ref) = &solve_tri_f32_256x256_tiled;
+            hipFuncSetAttribute(solve_256x256_ref, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size);
+#else
+            cudaFuncSetAttribute(solve_tri_f32_256x256_tiled,
                 cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size);
+#endif
             smem_configured_tiled = true;
         }
 
