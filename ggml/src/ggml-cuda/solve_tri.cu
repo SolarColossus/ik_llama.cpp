@@ -3,7 +3,7 @@
 #include "solve_tri.cuh"
 #include "ggml-cuda.h"
 #ifdef GGML_USE_HIPBLAS
-#include <hipblas>
+#include <hipblas.h>
 #else
 #include <cublas_v2.h>
 #endif
