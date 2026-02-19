@@ -3,7 +3,7 @@
 #include "solve_tri.cuh"
 #include "ggml-cuda.h"
 #ifdef GGML_USE_HIPBLAS
-#include <hipblas.h>
+#include <hipblas/hipblas.h>
 #else
 #include <cublas_v2.h>
 #endif
@@ -742,7 +742,7 @@ static void solve_tri_f32_cublas(
     cublasSetMathMode(handle, prev_math_mode);
 
     if (status != CUBLAS_STATUS_SUCCESS) {
-        fprintf(stderr, "cuBLAS batched TRSM failed: %d\n", (int) status);
+        fprintf(stderr, "BLAS batched TRSM failed: %d\n", (int) status);
     }
 }
 

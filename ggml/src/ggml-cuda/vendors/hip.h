@@ -31,8 +31,10 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define cublasGemmBatchedEx hipblasGemmBatchedEx
 #define cublasGemmStridedBatchedEx hipblasGemmStridedBatchedEx
 #define cublasHandle_t hipblasHandle_t
-#define cublasSetMathMode(handle, mode) CUBLAS_STATUS_SUCCESS
+#define cublasGetMathMode hipblasGetMathMode
+#define cublasSetMathMode hipblasSetMathMode
 #define cublasSetStream hipblasSetStream
+#define cublasStrsmBatched hipblasStrsmBatched
 #define cublasSgemm hipblasSgemm
 #define cublasStatus_t hipblasStatus_t
 #define cudaDataType_t hipDataType //deprecated, new hipblasDatatype not in 5.6
