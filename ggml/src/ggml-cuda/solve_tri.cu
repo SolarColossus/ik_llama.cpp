@@ -2,7 +2,11 @@
 #include "ggml.h"
 #include "solve_tri.cuh"
 #include "ggml-cuda.h"
+#ifdef GGML_USE_HIPBLAS
+#include <hipblas>
+#else
 #include <cublas_v2.h>
+#endif
 #include <cstdio>
 
 #define MAX_N_FAST 64
