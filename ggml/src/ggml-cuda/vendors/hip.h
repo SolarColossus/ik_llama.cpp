@@ -26,6 +26,7 @@ typedef __hip_bfloat162 nv_bfloat162;
 #define CUBLAS_STATUS_SUCCESS HIPBLAS_STATUS_SUCCESS
 #define CUBLAS_TF32_TENSOR_OP_MATH HIPBLAS_TF32_TENSOR_OP_MATH
 #define CUDA_R_16F  HIPBLAS_R_16F
+#define CUDA_R_16BF  HIPBLAS_R_16B
 #define CUDA_R_32F  HIPBLAS_R_32F
 #define __shfl_xor_sync(mask, var, laneMask, width) __shfl_xor(var, laneMask, width)
 #define cublasComputeType_t hipblasComputeType_t //deprecated, new hipblasComputeType_t not in 5.6
