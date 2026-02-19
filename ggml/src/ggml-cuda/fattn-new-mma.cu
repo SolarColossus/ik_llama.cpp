@@ -8,7 +8,7 @@
 
 #include "common.cuh"
 #include "cp-async.cuh"
-#include "mma.cuh"
+#include "mma_new.cuh"
 #include "fattn-common.cuh"
 #include "fattn-new-mma.cuh"
 

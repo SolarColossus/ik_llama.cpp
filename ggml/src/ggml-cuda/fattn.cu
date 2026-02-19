@@ -89,11 +89,11 @@ void ggml_cuda_flash_attn_ext(ggml_backend_cuda_context & ctx, ggml_tensor * dst
         return;
     }
 
-    // if (new_mma_available(cc) && K->ne[0] == 128 && V->ne[0] == 128 && Q->ne[0] == 128 && Q->ne[1] == 1 &&
-    //         (Q->ne[2] / K->ne[2] == 12 || Q->ne[2] / K->ne[2] == 6 || Q->ne[2] / K->ne[2] == 10)) {
-    //     ggml_cuda_flash_attn_ext_mma_new(ctx, dst);
-    //     return;
-    // }
+    if (new_mma_available(cc) && K->ne[0] == 128 && V->ne[0] == 128 && Q->ne[0] == 128 && Q->ne[1] == 1 &&
+            (Q->ne[2] / K->ne[2] == 12 || Q->ne[2] / K->ne[2] == 6 || Q->ne[2] / K->ne[2] == 10)) {
+        ggml_cuda_flash_attn_ext_mma_new(ctx, dst);
+        return;
+    }
 
     const bool gqa_opt_applies = ((Q->ne[2] / K->ne[2]) % 2 == 0) && mask; // The mma-based kernels have GQA-specific optimizations
     // So, not sure why in mainline they thought that for CC_ADA_LOVELACE or when KV cache is not f16 the vector kernels are faster.
@@ -114,11 +114,11 @@ void ggml_cuda_flash_attn_ext(ggml_backend_cuda_context & ctx, ggml_tensor * dst
     // so no other implementation works.
     //
 
-    // if (new_mma_available(cc) && ((K->ne[0] == 576 && V->ne[0] == 512) || (K->ne[0] == 192 && V->ne[0] == 128 && mma_better_than_turing(cc)))) {
-    //     //printf("Using ggml_cuda_flash_attn_ext_mma_new\n");
-    //     ggml_cuda_flash_attn_ext_mma_new(ctx, dst);
-    //     return;
-    // }
+    if (new_mma_available(cc) && ((K->ne[0] == 576 && V->ne[0] == 512) || (K->ne[0] == 192 && V->ne[0] == 128 && mma_better_than_turing(cc)))) {
+        //printf("Using ggml_cuda_flash_attn_ext_mma_new\n");
+        ggml_cuda_flash_attn_ext_mma_new(ctx, dst);
+        return;
+    }
 
     //
     // We need this because I haven't adapted new MMA kernels to work for different
